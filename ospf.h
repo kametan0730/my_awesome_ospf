@@ -1,9 +1,6 @@
 #include <cstdint>
 
-
-
-
-struct ospf_interface{
+struct ospf_interface {
     int sock_fd;
     uint32_t ip_address;
 
@@ -12,14 +9,13 @@ struct ospf_interface{
 
 extern ospf_interface* ospf_interface_list;
 
-struct neighbor{
+struct neighbor {
     uint32_t ip_address;
-
 
     neighbor* next;
 };
 
-enum ospf_packet_type{
+enum ospf_packet_type {
     HELLO = 1,
     DATABASE_DESCRIPTION = 2,
     LINK_STATE_REQUEST = 3,
@@ -27,7 +23,7 @@ enum ospf_packet_type{
     LINK_STATE_ACKNOLEDGEMENT = 4,
 };
 
-struct ospf_header{
+struct ospf_header {
     uint8_t version;
     uint8_t type;
     uint16_t length;
@@ -38,7 +34,8 @@ struct ospf_header{
     uint64_t authentication;
 } __attribute__((packed));
 
-struct ospf_hello{
+struct ospf_hello {
+    ospf_header header;
     uint32_t network_mask;
     uint16_t hello_interval;
     uint8_t option;
@@ -46,9 +43,14 @@ struct ospf_hello{
     uint32_t dead_interval;
     uint32_t designed_router;
     uint32_t backup_designed_router;
-    uint32_t neighbor[];
-};
+    uint32_t neighbor[64];
+} __attribute__((packed));
 
+struct ospf_packet {
+    union {
+        ospf_header header;
+        ospf_hello hello;
+    };
+} __attribute__((packed));
 
-void ospf_input(uint8_t* buffer, int len);
-
+void ospf_input(ospf_interface* iface, uint32_t ip_address, uint8_t* buffer, int len);
