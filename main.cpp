@@ -31,7 +31,7 @@ int main() {
         if (tmp->ifa_addr && tmp->ifa_addr->sa_family == AF_INET &&
             (tmp->ifa_flags & IFF_MULTICAST)) {
             // 各インターフェースをOSPFインターフェースという構造体で管理する
-            ospf_interface *iface;
+            ospf_interface *iface;         
             iface = (ospf_interface *)calloc(1, sizeof(ospf_interface));
 
             ospf_interface *next;
@@ -78,6 +78,9 @@ int main() {
 
     /** ファイルディスクリプタ監視用のディスクリプタを作成する **/
     fd_set sets, read_sets;
+    //timeval tv;
+    //tv.tv_sec = 1;
+    //tv.tv_usec = 0;
     int max_fd = 0;
     FD_ZERO(&sets);
 
@@ -86,6 +89,8 @@ int main() {
         max_fd = std::max(max_fd, iface->sock_fd);
         FD_SET(iface->sock_fd, &sets);
     }
+
+    router_id = inet_addr("250.0.0.250");
 
     /** パケット処理をする **/
     while (true) {
@@ -133,6 +138,6 @@ int main() {
             }
         }
     }
-    
+
     return 0;
 }
