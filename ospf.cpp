@@ -147,7 +147,7 @@ void ospf_input(ospf_interface *iface, uint32_t ip_address, uint8_t *buffer, int
             hello_rep->header.length = htons(packet_len);
 
             hello_rep->header.checksum = checksum_16(
-                reinterpret_cast<uint16_t *>(&hello_rep), packet_len, 0);
+                reinterpret_cast<uint16_t *>(hello_rep), packet_len, 0);
 
             sockaddr_in addr;
             addr.sin_family = AF_INET;
